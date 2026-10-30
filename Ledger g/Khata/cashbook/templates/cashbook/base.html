@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khata App - Digital Ledger</title>
+    <style>
+        /* --- ORANGE & BLACK CUSTOM THEME --- */
+        :root {
+            --bg-dark: #121212;       /* Deep Black background */
+            --bg-card: #1e1e1e;       /* Lighter Black for containers */
+            --primary-orange: #ff6600; /* Vibrant Orange for actions/highlights */
+            --text-light: #ffffff;     /* White text */
+            --text-muted: #b3b3b3;     /* Gray text for labels */
+            --border-color: #333333;   /* Subtle divider lines */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        /* --- NAVBAR STYLING --- */
+        .navbar {
+            background-color: var(--bg-card);
+            border-bottom: 2px solid var(--primary-orange);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            color: var(--primary-orange);
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .navbar-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .navbar-links a:hover {
+            color: var(--primary-orange);
+        }
+
+        /* --- MAIN LAYOUT CONTAINER --- */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* --- CORE COMPONENTS (REUSABLE) --- */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .btn-orange {
+            background-color: var(--primary-orange);
+            color: var(--bg-dark);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .btn-orange:hover {
+            background-color: #e65c00;
+            transform: translateY(-2px);
+        }
+
+        /* Tables for ledger logs */
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .custom-table th {
+            background-color: #2a2a2a;
+            color: var(--primary-orange);
+            text-align: left;
+            padding: 12px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .custom-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .custom-table tr:hover {
+            background-color: #252525;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="{% url 'dashboard' %}" class="navbar-brand">🍊 Khata Book</a>
+        <div class="navbar-links">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="/admin/" target="_blank">Admin Panel Panel</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>

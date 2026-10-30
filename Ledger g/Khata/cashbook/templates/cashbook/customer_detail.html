@@ -1,0 +1,232 @@
+{% extends 'cashbook/base.html' %}
+
+{% block content %}
+<style>
+    /* --- CUSTOMER PROFILE STYLING --- */
+    .back-link {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s;
+    }
+
+    .back-link:hover {
+        color: var(--primary-orange);
+    }
+
+    .profile-card {
+        border-top: 4px solid var(--primary-orange);
+        margin-bottom: 30px;
+    }
+
+    /* --- SALE CONTAINER STYLING --- */
+    .sale-agreement-card {
+        border-left: 4px solid var(--primary-orange);
+        margin-bottom: 40px;
+        position: relative;
+    }
+
+    .sale-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 10px;
+    }
+
+    /* --- STATUS BADGES --- */
+    .status-badge {
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-active {
+        background-color: rgba(255, 102, 0, 0.15);
+        color: var(--primary-orange);
+        border: 1px solid var(--primary-orange);
+    }
+
+    .status-completed {
+        background-color: rgba(0, 255, 102, 0.15);
+        color: #00ff66;
+        border: 1px solid #00ff66;
+    }
+
+    .status-overdue {
+        background-color: rgba(255, 51, 51, 0.15);
+        color: #ff3333;
+        border: 1px solid #ff3333;
+    }
+
+    /* --- METRIC FINANCIAL GRID --- */
+    .financial-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        background-color: #1a1a1a;
+        padding: 20px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        border: 1px solid var(--border-color);
+    }
+
+    .metric-box h5 {
+        color: var(--text-muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+        letter-spacing: 0.5px;
+    }
+
+    .metric-box p {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .metric-box .highlight-balance {
+        color: var(--primary-orange);
+        font-size: 22px;
+    }
+
+    /* --- GUARANTOR SECTION --- */
+    .guarantor-box {
+        background-color: #171717;
+        border: 1px dashed var(--border-color);
+        padding: 15px;
+        border-radius: 6px;
+        margin: 20px 0;
+    }
+
+    /* --- ACTION BUTTON --- */
+    .action-container {
+        margin: 25px 0;
+    }
+
+    .table-section-title {
+        color: var(--primary-orange);
+        margin-top: 25px;
+        margin-bottom: 10px;
+        font-size: 18px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 5px;
+    }
+</style>
+
+<a href="{% url 'dashboard' %}" class="back-link">⬅️ Dashboard Par Wapas Jayein</a>
+
+<div class="card profile-card">
+    <h1 style="color: var(--primary-orange); margin-bottom: 5px;">{{ customer.name }}</h1>
+    <p style="color: var(--text-muted); font-size: 15px;">
+        📱 <strong>Phone:</strong> {{ customer.phone_no }} &nbsp;|&nbsp; 
+        🪪 <strong>CNIC:</strong> {{ customer.cnic }} &nbsp;|&nbsp; 
+        📍 <strong>Address:</strong> {{ customer.address }}
+    </p>
+</div>
+
+<h2 style="margin-bottom: 20px;">Kharidari Ledger (Sale Agreements)</h2>
+
+{% for sale in sales %}
+<div class="card sale-agreement-card">
+    
+    <div class="sale-header">
+        <h3>🛍️ Product: <span style="color: var(--primary-orange);">{{ sale.product.name }}</span></h3>
+        <span class="status-badge {% if sale.status == 'active' %}status-active{% elif sale.status == 'completed' %}status-completed{% else %}status-overdue{% endif %}">
+            Agreement {{ sale.status }}
+        </span>
+    </div>
+
+    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">
+        📅 <strong>Sale Date:</strong> {{ sale.sale_date }} &nbsp;|&nbsp; <strong>Sale ID:</strong> #{{ sale.id }}
+    </p>
+
+    <div class="financial-grid">
+        <div class="metric-box">
+            <h5>Total Agreed Price</h5>
+            <p>Rs. {{ sale.agreed_selling_price }}</p>
+        </div>
+        <div class="metric-box">
+            <h5>Advance Payment</h5>
+            <p>Rs. {{ sale.advance_payment }}</p>
+        </div>
+        <div class="metric-box">
+            <h5>Monthly Installment</h5>
+            <p>Rs. {{ sale.monthly_installment_amount }} / Month</p>
+            <small style="color: var(--text-muted);">Duration: {{ sale.total_installments }} Months</small>
+        </div>
+        <div class="metric-box">
+            <h5>Total Recovered</h5>
+            <p style="color: #00ff66;">Rs. {{ sale.total_paid }}</p>
+        </div>
+        <div class="metric-box">
+            <h5>Baqaya Balance</h5>
+            <p class="highlight-balance">Rs. {{ sale.remaining_amount }}</p>
+        </div>
+    </div>
+
+    {% if sale.guarantor %}
+    <div class="guarantor-box">
+        <h4 style="font-size: 14px; color: var(--primary-orange); margin-bottom: 5px;">👤 Guarantor Details (Zamin):</h4>
+        <p style="font-size: 14px;">
+            <strong>Name:</strong> {{ sale.guarantor.name }} &nbsp;|&nbsp; 
+            <strong>Phone:</strong> {{ sale.guarantor.phone_no }} &nbsp;|&nbsp; 
+            <strong>CNIC:</strong> {{ sale.guarantor.cnic }}
+        </p>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 3px;"><strong>Address:</strong> {{ sale.guarantor.address }}</p>
+    </div>
+    {% else %}
+    <div class="guarantor-box" style="border-style: solid; background-color: transparent;">
+        <p style="font-size: 14px; color: var(--text-muted);">⚠️ Is transaction ka koi guarantor registered nahi hai.</p>
+    </div>
+    {% endif %}
+
+    {% if sale.status != 'completed' %}
+    <div class="action-container">
+        <a href="/sale/{{ sale.id }}/payment/add/" class="btn-orange">
+            💳 Nai Kist (Installment) Jamah Karein
+        </a>
+    </div>
+    {% endif %}
+
+    <h4 class="table-section-title">Vasooli Log (Payment Receipts)</h4>
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Receipt/Payment Date</th>
+                <th>Received From (Paid By)</th>
+                <th>Amount Deposited</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in sale.payments.all %}
+            <tr>
+                <td>📅 {{ payment.date_paid }}</td>
+                <td>👤 {{ payment.paid_by }}</td>
+                <td style="color: #00ff66; font-weight: bold;">+ Rs. {{ payment.amount_paid }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" style="color: var(--text-muted); text-align: center; padding: 20px;">
+                    Is saude/agreement ki abhi tak koi monthly kist jama nahi hui hai.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% empty %}
+<div class="card" style="text-align: center; padding: 40px;">
+    <p style="color: var(--text-muted); font-size: 16px;">Is customer ke naam par abhi tak koi cheez udhaar ya installments par nahi charhi hui.</p>
+    <br>
+    <a href="/admin/cashbook/sale/add/" target="_blank" class="btn-orange">+ Naya Sauda Charhein (Create Sale)</a>
+</div>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'cashbook/base.html' %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 500px;
+        margin: 40px auto;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--primary-orange);
+        font-weight: 500;
+    }
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        background-color: #252525;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        color: white;
+        font-size: 16px;
+    }
+    .form-control:focus {
+        border-color: var(--primary-orange);
+        outline: none;
+    }
+    .alert-msg {
+        background-color: #ff3333;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+    .success-msg {
+        background-color: #00ff66;
+        color: black;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+</style>
+
+<div style="margin-bottom: 20px;">
+    <a href="/customer/{{ sale.customer.id }}/" style="color: var(--text-muted); text-decoration: none;">⬅️ Cancel & Go Back</a>
+</div>
+
+<div class="card form-container">
+    <h2 style="color: var(--primary-orange); margin-bottom: 10px;">Installment Submission</h2>
+    <p style="color: var(--text-muted); margin-bottom: 25px;">
+        <strong>Customer:</strong> {{ sale.customer.name }}<br>
+        <strong>Item:</strong> {{ sale.product.name }}<br>
+        <strong>Remaining Balance:</strong> Rs. {{ sale.remaining_amount }}
+    </p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="{% if 'error' in message.tags %}alert-msg{% else %}success-msg{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" action="/sale/{{ sale.id }}/payment/add/">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="paid_by">Paisa Jama Karane Wale Ka Naam (Paid By)</label>
+            <input type="text" id="paid_by" name="paid_by" value="{{ sale.customer.name }}" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="amount_paid">Kitni Rakam Jama Ki? (Amount Paid in Rs.)</label>
+            <input type="number" id="amount_paid" name="amount_paid" step="0.01" class="form-control" placeholder="e.g. 5000" required>
+        </div>
+
+        <div class="form-group">
+            <label for="date_paid">Kist Jama Karne Ki Tareekh (Date)</label>
+            <input type="date" id="date_paid" name="date_paid" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn-orange" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 10px;">
+            Save Transaction ✅
+        </button>
+    </form>
+</div>
+
+<script>
+    // Automatically set today's date in the date input field
+    if(!document.getElementById('date_paid').value) {
+        document.getElementById('date_paid').valueAsDate = new Date();
+    }
+</script>
+{% endblock %}
